@@ -5,6 +5,7 @@ export abstract class Provider {
 }
 
 export abstract class TrustedProvider extends Provider {
+	public abstract getLogLevel(): LogType[];
 	public abstract getLastMessage(): string;
 	public initialLog(): string {
 		const seed =

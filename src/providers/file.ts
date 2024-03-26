@@ -10,7 +10,13 @@ const configurationSchema = z.object({
 	fileByDate: z.boolean().default(false),
 	logLevel: z
 		.array(z.nativeEnum(LogType))
-		.default([LogType.CRITICAL, LogType.ERROR, LogType.WARNING, LogType.INFO]),
+		.default([
+			LogType.CRITICAL,
+			LogType.ERROR,
+			LogType.WARNING,
+			LogType.INFO,
+			LogType.DEBUG,
+		]),
 });
 
 type ConfigurationT = z.infer<typeof configurationSchema>;
@@ -38,6 +44,10 @@ export class FileProvider extends TrustedProvider {
 				flag: "a",
 			}
 		);
+	}
+
+	public getLogLevel(): LogType[] {
+		return this.configuration.logLevel;
 	}
 
 	getLastMessage(): string {

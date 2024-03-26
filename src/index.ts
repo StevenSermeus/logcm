@@ -12,6 +12,22 @@ export class Logger {
 	private static _instance: Logger;
 
 	private constructor(private configuration: Configuration) {
+		const trustedProviderLevels =
+			this.configuration.trustedProvider.getLogLevel();
+		const allLevels = [
+			LogType.CRITICAL,
+			LogType.ERROR,
+			LogType.WARNING,
+			LogType.INFO,
+			LogType.DEBUG,
+		];
+		for (const level of allLevels) {
+			if (!trustedProviderLevels.includes(level)) {
+				throw new Error(
+					"Trusted provider must have all log levels enabled to ensure consistency."
+				);
+			}
+		}
 		this.configuration = configuration;
 		this.allProviders = [
 			this.configuration.trustedProvider,

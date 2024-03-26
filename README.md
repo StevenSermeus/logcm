@@ -33,7 +33,7 @@ logger2.info("This is a info message");
 
 ### Create a new TrustedProvider
 
-The `TrustedProvider` class can be extended to create a new provider. It's to be noted that the method `getLastMessage` should be implemented to get the last message from the provider. In cas it's the first log call the method `initialLog` that will log and return the first message.
+The `TrustedProvider` class can be extended to create a new provider. It's to be noted that the method `getLastMessage` should be implemented to get the last message from the provider. In cas it's the first log call the method `initialLog` that will log and return the first message. In addition a `TrustedProvider` should log message of all log levels to insure integrity of the log messages.
 
 ## Installation
 
