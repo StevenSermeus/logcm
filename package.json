@@ -1,0 +1,48 @@
+{
+	"name": "logcm",
+	"version": "0.0.2",
+	"description": "A modular logger with cryptography support to check the integrity of the logs",
+	"main": "dist/index.js",
+	"files": [
+		"dist"
+	],
+	"types": "dist/index.d.ts",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/StevenSermeus/logcm.git"
+	},
+	"scripts": {
+		"build": "tsup src/index.ts --format cjs,esm --dts",
+		"dev": "nodemon src/index.ts",
+		"lint": "tsc"
+	},
+	"keywords": [
+		"logging",
+		"crypto",
+		"security",
+		"typescript",
+		"nodejs",
+		"logger"
+	],
+	"author": "Sermeus Steven",
+	"license": "MIT",
+	"devDependencies": {
+		"@types/md5": "^2.3.5",
+		"@types/node": "^20.11.30",
+		"nodemon": "^3.1.0",
+		"ts-node": "^10.9.2",
+		"tsup": "^8.0.2",
+		"typescript": "^5.4.3"
+	},
+	"dependencies": {
+		"chalk": "^4.0.0",
+		"md5": "^2.3.0",
+		"zod": "^3.22.4"
+	},
+	"licenses": [
+		{
+			"type": "GPL-3.0-only",
+			"url": "https://www.gnu.org/licenses/gpl-3.0.html"
+		}
+	]
+}
