@@ -8,12 +8,16 @@ The logger can be used in the following way:
 
 ```ts
 import { Logger } from "logcm";
-import { FileProvider, ConsoleProvider } from "logcm/providers";
+import {
+	FileProvider,
+	ConsoleProvider,
+	DiscordProvider,
+} from "logcm/providers";
 
 const logger = Logger.getLogger({
 	trustedProvider: new FileProvider({}),
 	otherProviders: [
-		new ConsoleProvider(),
+		new ConsoleProvider({}),
 		new DiscordProvider({
 			webhook: "webhook url",
 		}),
