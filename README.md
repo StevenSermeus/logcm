@@ -56,3 +56,13 @@ Please adhere to this project's `code of conduct`.
 ## Authors
 
 - [@StevenSermeus](https://github.com/StevenSermeus)
+
+## Roadmap
+
+- Change `TrustedProvider` constructor to include log levels and default to all log levels
+
+- Add more providers
+
+- Add log integrity check
+
+- Add custom log format option
