@@ -1,6 +1,6 @@
 {
 	"name": "logcm",
-	"version": "1.0.0",
+	"version": "1.0.42",
 	"description": "A modular logger with cryptography support to check the integrity of the logs",
 	"main": "dist/index.js",
 	"files": [
@@ -25,7 +25,6 @@
 		"logger"
 	],
 	"author": "Sermeus Steven",
-	"license": "MIT",
 	"devDependencies": {
 		"@types/md5": "^2.3.5",
 		"@types/node": "^20.11.30",
@@ -38,10 +37,5 @@
 		"chalk": "^4.0.0",
 		"zod": "^3.22.4"
 	},
-	"licenses": [
-		{
-			"type": "GPL-3.0-only",
-			"url": "https://www.gnu.org/licenses/gpl-3.0.html"
-		}
-	]
+	"license": "GPL-3.0-only"
 }
