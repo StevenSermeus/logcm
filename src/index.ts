@@ -1,6 +1,7 @@
 import { Provider, TrustedProvider } from "./providers/provider";
 import { createHash } from "crypto";
 import { LogType, MoreInfo } from "./types";
+import { emailObfuscation } from "./utils/obfuscation";
 
 export class Logger {
 	private format: string = "HASH[TYPE] HH:MI:SS:MS DD/MM/YYYY TZ MSG";
