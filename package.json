@@ -1,6 +1,6 @@
 {
 	"name": "logcm",
-	"version": "0.0.2",
+	"version": "1.0.0",
 	"description": "A modular logger with cryptography support to check the integrity of the logs",
 	"main": "dist/index.js",
 	"files": [

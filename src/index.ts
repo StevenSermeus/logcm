@@ -113,20 +113,3 @@ export class Logger {
 		return createHash("sha256").update(message).digest("hex");
 	}
 }
-
-import { ConsoleProvider, FileProvider, DiscordProvider } from "./providers";
-
-const logger = Logger.getLogger([
-	new ConsoleProvider({}),
-	new DiscordProvider({
-		webhook: "http://....",
-	}),
-	new FileProvider({
-		basePath: "./logs",
-		fileByDate: true,
-		fileName: "log.txt",
-	}),
-]);
-
-logger.info("Hello world");
-logger.warn("Hello world");
