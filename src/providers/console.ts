@@ -20,11 +20,11 @@ export class ConsoleProvider extends Provider {
 	private configuration: ConfigurationT;
 
 	constructor(configuration: z.input<typeof configurationSchema>) {
-		super();
 		const parsedConfig = configurationSchema.safeParse(configuration);
 		if (!parsedConfig.success) {
 			throw new Error("Invalid configuration");
 		}
+		super(parsedConfig.data.logLevel);
 		this.configuration = parsedConfig.data;
 	}
 

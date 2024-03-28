@@ -1,52 +1,59 @@
-import md5 from "md5";
 import { Provider, TrustedProvider } from "./providers/provider";
+import { createHash } from "crypto";
 import { LogType, MoreInfo } from "./types";
-interface Configuration {
-	trustedProvider: TrustedProvider;
-	otherProviders: Provider[];
-}
+
 export class Logger {
-	private format: string = "HASH [TYPE] HH:MI:SS:MS DD/MM/YYYY TZ MSG";
+	private format: string = "HASH[TYPE] HH:MI:SS:MS DD/MM/YYYY TZ MSG";
 	private allProviders: Provider[];
+	private trustedProvider: TrustedProvider | null = null;
 	private lastMessageHash: string = "";
 	private static _instance: Logger;
+	private trustedProviderLogLevelRequired: LogType[] = [
+		LogType.CRITICAL,
+		LogType.ERROR,
+		LogType.WARNING,
+		LogType.INFO,
+		LogType.DEBUG,
+	];
 
-	private constructor(private configuration: Configuration) {
-		const trustedProviderLevels =
-			this.configuration.trustedProvider.getLogLevel();
-		const allLevels = [
-			LogType.CRITICAL,
-			LogType.ERROR,
-			LogType.WARNING,
-			LogType.INFO,
-			LogType.DEBUG,
-		];
-		for (const level of allLevels) {
-			if (!trustedProviderLevels.includes(level)) {
-				throw new Error(
-					"Trusted provider must have all log levels enabled to ensure consistency."
-				);
+	private constructor(
+		providers: Provider[],
+		trustedProvider: TrustedProvider | null = null
+	) {
+		this.allProviders = providers;
+		if (trustedProvider) {
+			const providerLogLevel = trustedProvider.getLogLevel();
+			for (let logLevel of this.trustedProviderLogLevelRequired) {
+				if (!providerLogLevel.includes(logLevel)) {
+					throw new Error(
+						`Trusted provider must have log level ${logLevel} but has ${providerLogLevel.join(
+							", "
+						)}`
+					);
+				}
 			}
+			this.trustedProvider = trustedProvider;
+			this.allProviders.unshift(trustedProvider);
+			this.lastMessageHash = this.hash(trustedProvider.getLastMessage());
 		}
-		this.configuration = configuration;
-		this.allProviders = [
-			this.configuration.trustedProvider,
-			...this.configuration.otherProviders,
-		];
-		this.lastMessageHash = this.hash(
-			this.configuration.trustedProvider.getLastMessage()
-		);
 	}
-	public static getLogger(configuration: Configuration | void): Logger {
-		if (configuration && !this._instance) {
-			this._instance = new Logger(configuration);
-			return this._instance;
+	public static getLogger(): Logger;
+	public static getLogger(providers: Provider[]): Logger;
+	public static getLogger(
+		providers: Provider[],
+		trustedProvider: TrustedProvider
+	): Logger;
+
+	public static getLogger(
+		providers?: Provider[],
+		trustedProvider?: TrustedProvider
+	): Logger {
+		if (!Logger._instance) {
+			Logger._instance = new Logger(providers ?? [], trustedProvider ?? null);
 		}
-		if (!configuration && !this._instance) {
-			throw new Error("Logger not set up");
-		}
-		return this._instance;
+		return Logger._instance;
 	}
+
 	public info(message: string): void {
 		this.log(message, LogType.INFO);
 	}
@@ -76,15 +83,16 @@ export class Logger {
 			timeLogged,
 			lastMessageHash: this.lastMessageHash,
 		};
-		this.lastMessageHash = this.hash(formattedMessage);
+		if (this.trustedProvider !== null) {
+			this.lastMessageHash = this.hash(formattedMessage);
+		}
 		this.allProviders.forEach((provider) =>
 			provider.log(formattedMessage, moreInfo)
 		);
 	}
 
 	formatMessage(message: string, type: LogType, timeLogged: Date): string {
-		return this.format
-			.replace("HASH", this.lastMessageHash)
+		const formattedMessage = this.format
 			.replace("TYPE", type)
 			.replace("HH", timeLogged.getHours().toString())
 			.replace("MI", timeLogged.getMinutes().toString())
@@ -96,8 +104,29 @@ export class Logger {
 			.replace("MM", timeLogged.getMonth().toString())
 			.replace("YYYY", timeLogged.getFullYear().toString())
 			.replace("MSG", message);
+		if (this.trustedProvider === null) {
+			return formattedMessage.replace("HASH", "");
+		}
+		return formattedMessage.replace("HASH", this.lastMessageHash + " ");
 	}
 	private hash(message: string): string {
-		return md5(message);
+		return createHash("sha256").update(message).digest("hex");
 	}
 }
+
+import { ConsoleProvider, FileProvider, DiscordProvider } from "./providers";
+
+const logger = Logger.getLogger([
+	new ConsoleProvider({}),
+	new DiscordProvider({
+		webhook: "http://....",
+	}),
+	new FileProvider({
+		basePath: "./logs",
+		fileByDate: true,
+		fileName: "log.txt",
+	}),
+]);
+
+logger.info("Hello world");
+logger.warn("Hello world");

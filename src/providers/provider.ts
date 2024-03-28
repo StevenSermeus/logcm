@@ -1,11 +1,26 @@
 import { LogType, MoreInfo } from "../types/index";
 
 export abstract class Provider {
+	private logLevel: LogType[];
+	constructor(logLevel: LogType[]) {
+		this.logLevel = logLevel;
+	}
+	public getLogLevel(): LogType[] {
+		return this.logLevel;
+	}
 	public abstract log(message: string, moreInfo: MoreInfo): void;
 }
 
 export abstract class TrustedProvider extends Provider {
-	public abstract getLogLevel(): LogType[];
+	constructor() {
+		super([
+			LogType.CRITICAL,
+			LogType.ERROR,
+			LogType.WARNING,
+			LogType.INFO,
+			LogType.DEBUG,
+		]);
+	}
 	public abstract getLastMessage(): string;
 	public initialLog(): string {
 		const seed =

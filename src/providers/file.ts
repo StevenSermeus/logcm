@@ -46,10 +46,6 @@ export class FileProvider extends TrustedProvider {
 		);
 	}
 
-	public getLogLevel(): LogType[] {
-		return this.configuration.logLevel;
-	}
-
 	getLastMessage(): string {
 		if (
 			!fs.existsSync(path.join(this.configuration.basePath, this.getFilename()))
@@ -65,7 +61,8 @@ export class FileProvider extends TrustedProvider {
 				path.join(this.configuration.basePath, lastFile),
 				"utf8"
 			);
-			return data[data.length - 1];
+			const lines = data.trim().split("\n");
+			return lines[lines.length - 1];
 		}
 		const data = fs.readFileSync(
 			path.join(this.configuration.basePath, this.configuration.fileName),

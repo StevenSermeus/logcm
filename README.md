@@ -6,33 +6,62 @@ A modular logger for javascript/typescript projects. This logger can be used to 
 
 The logger can be used in the following way:
 
+### A logger with a trusted provider
+
+Message will contain a sha256 hash of the last message to confirm that the message hasn't been tampered with.
+
 ```ts
 import { Logger } from "logcm";
 import {
-	FileProvider,
 	ConsoleProvider,
+	FileProvider,
 	DiscordProvider,
 } from "logcm/providers";
 
-const logger = Logger.getLogger({
-	trustedProvider: new FileProvider({}),
-	otherProviders: [
+const logger = Logger.getLogger(
+	[
 		new ConsoleProvider({}),
 		new DiscordProvider({
-			webhook: "webhook url",
+			webhook: "http://....",
 		}),
 	],
-});
+	new FileProvider({
+		basePath: "./logs",
+		fileByDate: true,
+		fileName: "log.txt",
+	})
+);
 
-logger.info("This is a info message");
-logger.warn("This is a warning message");
-logger.error("This is a error message");
-logger.debug("This is a debug message");
-logger.critical("This is a critical message");
+logger.info("Hello world");
+logger.warn("Hello world");
+```
 
-const logger2 = Logger.getLogger();
+### A logger without a trusted provider
 
-logger2.info("This is a info message");
+Message will not contain a sha256 it will act as a normal logger.
+
+```ts
+import { Logger } from "logcm";
+import {
+	ConsoleProvider,
+	FileProvider,
+	DiscordProvider,
+} from "logcm/providers";
+
+const logger = Logger.getLogger([
+	new ConsoleProvider({}),
+	new DiscordProvider({
+		webhook: "http://....",
+	}),
+	new FileProvider({
+		basePath: "./logs",
+		fileByDate: true,
+		fileName: "log.txt",
+	}),
+]);
+
+logger.info("Hello world");
+logger.warn("Hello world");
 ```
 
 ### Create a new TrustedProvider
@@ -63,10 +92,10 @@ Please adhere to this project's `code of conduct`.
 
 ## Roadmap
 
-- Change `TrustedProvider` constructor to include log levels and default to all log levels
+- Add more providers.
 
-- Add more providers
+- Add log integrity check.
 
-- Add log integrity check
+- Add custom log format option.
 
-- Add custom log format option
+- Evaluate the possibility to change the hashing technique use to hash the last message.(Maybe add a secret key at the end of the message before hashing it)
