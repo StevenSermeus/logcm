@@ -12,14 +12,16 @@ export abstract class Provider {
 }
 
 export abstract class TrustedProvider extends Provider {
-	constructor() {
-		super([
+	constructor(
+		logLevel: LogType[] = [
 			LogType.CRITICAL,
 			LogType.ERROR,
 			LogType.WARNING,
 			LogType.INFO,
 			LogType.DEBUG,
-		]);
+		]
+	) {
+		super(logLevel);
 	}
 	public abstract getLastMessage(): string;
 	public initialLog(): string {

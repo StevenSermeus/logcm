@@ -14,7 +14,8 @@
 	"scripts": {
 		"build": "tsup src/index.ts --format cjs,esm --dts",
 		"dev": "nodemon src/index.ts",
-		"lint": "tsc"
+		"lint": "tsc",
+		"test": "vitest"
 	},
 	"keywords": [
 		"logging",
@@ -26,12 +27,12 @@
 	],
 	"author": "Sermeus Steven",
 	"devDependencies": {
-		"@types/md5": "^2.3.5",
 		"@types/node": "^20.11.30",
 		"nodemon": "^3.1.0",
 		"ts-node": "^10.9.2",
 		"tsup": "^8.0.2",
-		"typescript": "^5.4.3"
+		"typescript": "^5.4.3",
+		"vitest": "^1.4.0"
 	},
 	"dependencies": {
 		"chalk": "^4.0.0",

@@ -26,10 +26,10 @@ export class FileProvider extends TrustedProvider {
 
 	constructor(configuration: z.input<typeof configurationSchema>) {
 		const parsedConfig = configurationSchema.safeParse(configuration);
-		super();
 		if (!parsedConfig.success) {
 			throw new Error("Invalid configuration");
 		}
+		super(parsedConfig.data.logLevel);
 		this.configuration = parsedConfig.data;
 		if (!fs.existsSync(this.configuration.basePath)) {
 			fs.mkdirSync(this.configuration.basePath);

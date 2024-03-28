@@ -49,7 +49,11 @@ export class Logger {
 		trustedProvider?: TrustedProvider
 	): Logger {
 		if (!Logger._instance) {
-			Logger._instance = new Logger(providers ?? [], trustedProvider ?? null);
+			if (providers || trustedProvider) {
+				Logger._instance = new Logger(providers ?? [], trustedProvider ?? null);
+			} else {
+				throw new Error("Logger not initialized");
+			}
 		}
 		return Logger._instance;
 	}

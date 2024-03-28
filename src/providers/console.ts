@@ -28,10 +28,6 @@ export class ConsoleProvider extends Provider {
 		this.configuration = parsedConfig.data;
 	}
 
-	public getLastMessage(): string {
-		return "Imposible to get last message for console provider.";
-	}
-
 	public log(message: string, moreInfo: MoreInfo): void {
 		if (!this.configuration.logLevel.includes(moreInfo.type)) return;
 		const type = moreInfo.type;
