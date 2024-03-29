@@ -55,7 +55,7 @@ export class Logger {
 			} else if (providers instanceof TrustedProvider) {
 				Logger._instance = new Logger([], providers);
 			} else {
-				Logger._instance = new Logger([], null);
+				throw new Error("Logger not configured");
 			}
 		}
 		return Logger._instance;
