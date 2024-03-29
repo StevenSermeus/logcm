@@ -1,7 +1,6 @@
 import { Provider, TrustedProvider } from "./providers/provider";
 import { createHash } from "crypto";
 import { LogType, MoreInfo } from "./types";
-import { emailObfuscation } from "./utils/obfuscation";
 
 export class Logger {
 	private format: string = "HASH[TYPE] HH:MI:SS:MS DD/MM/YYYY TZ MSG";
@@ -44,16 +43,19 @@ export class Logger {
 		providers: Provider[],
 		trustedProvider: TrustedProvider
 	): Logger;
+	public static getLogger(trustedProvider: TrustedProvider): Logger;
 
 	public static getLogger(
-		providers?: Provider[],
+		providers?: Provider[] | TrustedProvider,
 		trustedProvider?: TrustedProvider
 	): Logger {
 		if (!Logger._instance) {
-			if (providers || trustedProvider) {
-				Logger._instance = new Logger(providers ?? [], trustedProvider ?? null);
+			if (providers instanceof Array) {
+				Logger._instance = new Logger(providers, trustedProvider || null);
+			} else if (providers instanceof TrustedProvider) {
+				Logger._instance = new Logger([], providers);
 			} else {
-				throw new Error("Logger not initialized");
+				Logger._instance = new Logger([], null);
 			}
 		}
 		return Logger._instance;

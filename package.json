@@ -15,7 +15,8 @@
 		"build": "vitest run && tsup src/index.ts --format cjs,esm --dts",
 		"dev": "nodemon src/index.ts",
 		"lint": "tsc",
-		"test": "vitest"
+		"test": "vitest",
+		"test:ui": "vitest --ui"
 	},
 	"keywords": [
 		"logging",
@@ -27,7 +28,9 @@
 	],
 	"author": "Sermeus Steven",
 	"devDependencies": {
+		"@types/express": "^4.17.21",
 		"@types/node": "^20.11.30",
+		"@vitest/ui": "^1.4.0",
 		"nodemon": "^3.1.0",
 		"ts-node": "^10.9.2",
 		"tsup": "^8.0.2",
@@ -36,6 +39,7 @@
 	},
 	"dependencies": {
 		"chalk": "^4.0.0",
+		"express": "^4.19.2",
 		"zod": "^3.22.4"
 	},
 	"license": "GPL-3.0-only"

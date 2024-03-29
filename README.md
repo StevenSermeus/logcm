@@ -1,6 +1,6 @@
 # logcm
 
-A modular logger for javascript/typescript projects. This logger can be used to log messages to the console, file, database, etc. You can easily add new providers by extending the `Provider` class or `TrustedProvider` class. The logger is a singleton and can be used in multiple files without having to pass it around. A md5 hash of the last message is added to the message to confirm that the message hasn't been tampered with.
+A modular logger for javascript/typescript projects. This logger can be used to log messages to the console, file, database, etc. You can easily add new providers by extending the `Provider` class or `TrustedProvider` class. The logger is a singleton and can be used in multiple files without having to pass it around. A sha256 hash of the last message is added to the message to confirm that the message hasn't been tampered with.
 
 ## Usage/Examples
 
@@ -99,3 +99,5 @@ Please adhere to this project's `code of conduct`.
 - Add custom log format option.
 
 - Evaluate the possibility to change the hashing technique use to hash the last message.(Maybe add a secret key at the end of the message before hashing it)
+
+- Using custom error.
