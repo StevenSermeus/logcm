@@ -35,7 +35,7 @@ export class FileProvider extends TrustedProvider {
 			fs.mkdirSync(this.configuration.basePath);
 		}
 	}
-
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	log(message: string, moreInfo: MoreInfo): void {
 		fs.writeFileSync(
 			path.join(this.configuration.basePath, this.getFilename()),

@@ -23,7 +23,7 @@ export class Logger {
 		this.allProviders = providers;
 		if (trustedProvider) {
 			const providerLogLevel = trustedProvider.getLogLevel();
-			for (let logLevel of this.trustedProviderLogLevelRequired) {
+			for (const logLevel of this.trustedProviderLogLevelRequired) {
 				if (!providerLogLevel.includes(logLevel)) {
 					throw new Error(
 						`Trusted provider must have log level ${logLevel} but has ${providerLogLevel.join(
