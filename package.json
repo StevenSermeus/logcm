@@ -12,13 +12,14 @@
 		"url": "git+https://github.com/StevenSermeus/logcm.git"
 	},
 	"scripts": {
-		"build": "vitest run && tsup src/index.ts --format cjs,esm --dts",
+		"build": "tsup ",
 		"dev": "nodemon src/index.ts",
 		"lint": "eslint . --ignore-pattern dist",
 		"test": "vitest run",
 		"test:watch": "vitest --watch",
 		"type-check": "tsc --noEmit",
-		"test:ui": "vitest --ui"
+		"test:ui": "vitest --ui",
+		"precommit:install": "lefthook install"
 	},
 	"keywords": [
 		"logging",
@@ -38,6 +39,7 @@
 		"lefthook": "^1.6.7",
 		"nodemon": "^3.1.0",
 		"prettier": "^3.2.5",
+		"tiny-glob": "^0.2.9",
 		"ts-node": "^10.9.2",
 		"tsup": "^8.0.2",
 		"typescript": "^5.4.3",
