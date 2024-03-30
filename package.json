@@ -1,11 +1,23 @@
 {
   "name": "logcm",
-  "version": "1.1.0",
+  "version": "1.1.7",
   "description": "A modular logger with cryptography support to check the integrity of the logs",
   "main": "dist/index.js",
   "files": [
     "dist"
   ],
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./providers": {
+      "require": "./dist/providers/index.js",
+      "import": "./dist/providers/index.mjs",
+      "types": "./dist/providers/index.d.ts"
+    }
+  },
   "types": "dist/index.d.ts",
   "repository": {
     "type": "git",
@@ -22,7 +34,7 @@
     "precommit:install": "lefthook install",
     "format": "prettier --write .",
     "bump": "changeset",
-    "release": "changeset version"
+    "release": "pnpm run build && changeset version && changeset publish"
   },
   "keywords": [
     "logging",

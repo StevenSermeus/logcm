@@ -1,6 +1,7 @@
 import { Provider, TrustedProvider } from "./providers/provider";
 import { createHash } from "crypto";
 import { LogType, MoreInfo } from "./types";
+export { LogType, MoreInfo, Provider, TrustedProvider };
 export class Logger {
   private format: string = "HASH[TYPE] HH:MI:SS:MS DD/MM/YYYY TZ MSG";
   private allProviders: Provider[];
