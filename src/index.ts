@@ -1,6 +1,15 @@
 import { Provider, TrustedProvider } from "./providers/provider";
 import { createHash } from "crypto";
 import { LogType, MoreInfo } from "./types";
+import { FileProvider, DiscordProvider, ConsoleProvider } from "./providers";
+
+export {
+	Provider,
+	TrustedProvider,
+	FileProvider,
+	DiscordProvider,
+	ConsoleProvider,
+};
 
 export class Logger {
 	private format: string = "HASH[TYPE] HH:MI:SS:MS DD/MM/YYYY TZ MSG";

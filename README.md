@@ -11,12 +11,7 @@ The logger can be used in the following way:
 Message will contain a sha256 hash of the last message to confirm that the message hasn't been tampered with.
 
 ```ts
-import { Logger } from "logcm";
-import {
-	ConsoleProvider,
-	FileProvider,
-	DiscordProvider,
-} from "logcm/providers";
+import { Logger, ConsoleProvider, FileProvider, DiscordProvider } from "logcm";
 
 const logger = Logger.getLogger(
 	[
@@ -41,12 +36,7 @@ logger.warn("Hello world");
 Message will not contain a sha256 it will act as a normal logger.
 
 ```ts
-import { Logger } from "logcm";
-import {
-	ConsoleProvider,
-	FileProvider,
-	DiscordProvider,
-} from "logcm/providers";
+import { Logger, ConsoleProvider, FileProvider, DiscordProvider } from "logcm";
 
 const logger = Logger.getLogger([
 	new ConsoleProvider({}),

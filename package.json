@@ -1,6 +1,6 @@
 {
 	"name": "logcm",
-	"version": "1.0.42",
+	"version": "1.0.43",
 	"description": "A modular logger with cryptography support to check the integrity of the logs",
 	"main": "dist/index.js",
 	"files": [
@@ -14,8 +14,10 @@
 	"scripts": {
 		"build": "vitest run && tsup src/index.ts --format cjs,esm --dts",
 		"dev": "nodemon src/index.ts",
-		"lint": "tsc && eslint --ext .ts src/",
-		"test": "vitest",
+		"lint": "eslint . --ignore-pattern dist",
+		"test": "vitest run",
+		"test:watch": "vitest --watch",
+		"type-check": "tsc --noEmit",
 		"test:ui": "vitest --ui"
 	},
 	"keywords": [
@@ -33,7 +35,9 @@
 		"@types/node": "^20.11.30",
 		"@vitest/ui": "^1.4.0",
 		"eslint": "^8.57.0",
+		"lefthook": "^1.6.7",
 		"nodemon": "^3.1.0",
+		"prettier": "^3.2.5",
 		"ts-node": "^10.9.2",
 		"tsup": "^8.0.2",
 		"typescript": "^5.4.3",
