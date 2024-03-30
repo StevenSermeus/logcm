@@ -1,48 +1,38 @@
-import { z } from "zod";
 import { LogType, MoreInfo } from "../types/index";
 import { Provider } from "./provider";
 import chalk from "chalk";
 
-const configurationSchema = z.object({
-	logLevel: z
-		.array(z.nativeEnum(LogType))
-		.default([
-			LogType.CRITICAL,
-			LogType.ERROR,
-			LogType.WARNING,
-			LogType.INFO,
-			LogType.DEBUG,
-		]),
-});
-
-type ConfigurationT = z.infer<typeof configurationSchema>;
 export class ConsoleProvider extends Provider {
-	private configuration: ConfigurationT;
-
-	constructor(configuration: z.input<typeof configurationSchema> = {}) {
-		const parsedConfig = configurationSchema.safeParse(configuration);
-		if (!parsedConfig.success) {
-			throw new Error("Invalid configuration");
-		}
-		super(parsedConfig.data.logLevel);
-		this.configuration = parsedConfig.data;
-	}
-
-	public log(message: string, moreInfo: MoreInfo): void {
-		if (!this.configuration.logLevel.includes(moreInfo.type)) return;
-		const type = moreInfo.type;
-		if (type == LogType.CRITICAL || type == LogType.ERROR) {
-			console.error(chalk.redBright(message));
-			return;
-		}
-		if (type == LogType.DEBUG) {
-			console.debug(chalk.yellow(message));
-			return;
-		}
-		if (type == LogType.WARNING) {
-			console.warn(chalk.bgYellow(message));
-			return;
-		}
-		console.log(chalk.blue(message));
-	}
+  constructor(
+    logLevels: LogType[] = [
+      LogType.INFO,
+      LogType.WARNING,
+      LogType.CRITICAL,
+      LogType.ERROR,
+    ],
+  ) {
+    super(logLevels);
+  }
+  public log(message: string, moreInfo: MoreInfo): void {
+    if (!this.getLogLevels().includes(moreInfo.type)) {
+      return;
+    }
+    switch (moreInfo.type) {
+      case LogType.INFO:
+        console.log(chalk.blue(message));
+        break;
+      case LogType.WARNING:
+        console.log(chalk.yellow(message));
+        break;
+      case LogType.DEBUG:
+        console.log(chalk.green(message));
+        break;
+      case LogType.CRITICAL:
+        console.log(chalk.red(message));
+        break;
+      case LogType.ERROR:
+        console.log(chalk.red(message));
+        break;
+    }
+  }
 }

@@ -1,5 +1,11 @@
 # logcm
 
+## 2.0.0
+
+### Major Changes
+
+- Removing TrustedProvider and using Hmac to validate the log integrity. Improvement for the providers usage.
+
 ## 1.1.7
 
 ### Patch Changes

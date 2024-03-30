@@ -1,50 +1,75 @@
-import { z } from "zod";
 import { LogType, MoreInfo } from "../types";
 import { Provider } from "./provider";
-import chalk from "chalk";
+import { Webhook, MessageBuilder } from "discord-webhook-node";
 
-const configurationSchema = z.object({
-  webhook: z.string(),
-  webhookTitle: z.string().default("Logging"),
-  logLevel: z
-    .array(z.nativeEnum(LogType))
-    .default([LogType.CRITICAL, LogType.ERROR, LogType.WARNING]),
-});
-
-type Configuration = z.infer<typeof configurationSchema>;
-
+interface DiscordProviderOptions {
+  webhookUrl: string;
+  avatarUrl?: string;
+  username?: string;
+  logLevels: LogType[];
+}
+/**
+ * Be conscious of the rate limits of the Discord API when using this provider and the message may not arrive in the order it was sent. It's recommended to use this provider only to be notified of critical errors.
+ */
 export class DiscordProvider extends Provider {
-  private configuration: Configuration;
-  constructor(configuration: z.input<typeof configurationSchema>) {
-    const parsedConfig = configurationSchema.safeParse(configuration);
-    if (!parsedConfig.success) {
-      throw new Error(parsedConfig.error.errors[0].message);
-    }
-    super(parsedConfig.data.logLevel);
-    this.configuration = parsedConfig.data;
-  }
-  public log(message: string, moreInfo: MoreInfo): void {
-    if (!this.configuration.logLevel.includes(moreInfo.type)) return;
+  private webhook: Webhook;
 
-    const webhookmessage = {
-      embeds: [
-        {
-          title: "Logging",
-          fields: [{ name: "message", value: message }],
-        },
-      ],
-    };
-    fetch(this.configuration.webhook, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(webhookmessage),
-    }).catch((error) => {
-      console.error(
-        chalk.red("Error sending message to discord log was: ", message),
-        error,
-      );
+  constructor({
+    webhookUrl,
+    logLevels = [LogType.CRITICAL, LogType.ERROR, LogType.WARNING],
+    username = "Logger",
+    avatarUrl = "https://avatars.githubusercontent.com/u/67290591?v=4",
+  }: DiscordProviderOptions) {
+    super(logLevels);
+    const urlRegex = new RegExp(
+      /https:\/\/discord.com\/api\/webhooks\/\d+\/[A-Za-z0-9_-]+/,
+    );
+    if (!urlRegex.test(webhookUrl)) {
+      throw new Error("Invalid webhook URL");
+    }
+    this.webhook = new Webhook({
+      url: webhookUrl,
+      throwErrors: true,
+      retryOnLimit: true,
     });
+    this.webhook.setUsername(username);
+    this.webhook.setAvatar(avatarUrl);
+  }
+
+  public log(message: string, moreInfo: MoreInfo): void {
+    if (!this.getLogLevels().includes(moreInfo.type)) {
+      return;
+    }
+    const color = this.getColor(moreInfo.type);
+    message = message.replace(moreInfo.messageHmac || "", "");
+    const embed = new MessageBuilder()
+      .setTitle(moreInfo.type)
+      .setDescription(message)
+      .setColor(color)
+      .addField("Time", moreInfo.timeLogged.toString())
+      .addField("Message HMAC", moreInfo.messageHmac || "No HMAC provided")
+      .setTimestamp();
+    try {
+      this.webhook.send(embed);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  private getColor(type: LogType): number {
+    switch (type) {
+      case LogType.INFO:
+        return 0x0000ff;
+      case LogType.WARNING:
+        return 0xffff00;
+      case LogType.DEBUG:
+        return 0x00ff00;
+      case LogType.CRITICAL:
+        return 0xff0000;
+      case LogType.ERROR:
+        return 0xff0000;
+      default:
+        return 0xffffff;
+    }
   }
 }

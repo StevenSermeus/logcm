@@ -22,7 +22,7 @@ export enum Token {
 
 export interface MoreInfo {
   messageNotFormatted: string;
-  lastMessageHash: string;
+  messageHmac: string | undefined;
   type: LogType;
   timeLogged: Date;
 }

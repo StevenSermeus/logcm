@@ -1,96 +1,68 @@
 import { LogType, MoreInfo } from "../types/index";
-import { TrustedProvider } from "./provider";
-import { z } from "zod";
+import { Provider } from "./provider";
 import * as fs from "fs";
 import path from "path";
 
-const configurationSchema = z.object({
-	basePath: z.string().default("./logs"),
-	fileName: z.string().default("log.log"),
-	fileByDate: z.boolean().default(false),
-	logLevel: z
-		.array(z.nativeEnum(LogType))
-		.default([
-			LogType.CRITICAL,
-			LogType.ERROR,
-			LogType.WARNING,
-			LogType.INFO,
-			LogType.DEBUG,
-		]),
-});
+interface FileProviderOptions {
+  filePath?: string;
+  fileByDay?: boolean;
+  fileName?: string;
+  logLevel?: LogType[];
+}
 
-type ConfigurationT = z.infer<typeof configurationSchema>;
+export class FileProvider extends Provider {
+  private filePath: string;
+  private fileByDay: boolean;
+  private fileName: string;
 
-export class FileProvider extends TrustedProvider {
-	private configuration: ConfigurationT;
+  constructor(
+    {
+      filePath = "./logs",
+      fileByDay = false,
+      fileName = "log.log",
+      logLevel = [
+        LogType.INFO,
+        LogType.WARNING,
+        LogType.CRITICAL,
+        LogType.ERROR,
+      ],
+    }: FileProviderOptions = {
+      filePath: "./logs",
+      fileByDay: false,
+      fileName: "log.log",
+      logLevel: [
+        LogType.INFO,
+        LogType.WARNING,
+        LogType.CRITICAL,
+        LogType.ERROR,
+      ],
+    },
+  ) {
+    super(logLevel);
+    this.filePath = filePath;
+    this.fileByDay = fileByDay;
+    this.fileName = fileName;
+  }
 
-	constructor(
-		configuration: z.input<typeof configurationSchema> = {
-			basePath: "./logs",
-			fileName: "log.log",
-			fileByDate: false,
-			logLevel: [
-				LogType.CRITICAL,
-				LogType.ERROR,
-				LogType.WARNING,
-				LogType.INFO,
-				LogType.DEBUG,
-			],
-		}
-	) {
-		const parsedConfig = configurationSchema.safeParse(configuration);
-		if (!parsedConfig.success) {
-			throw new Error("Invalid configuration");
-		}
-		super(parsedConfig.data.logLevel);
-		this.configuration = parsedConfig.data;
-		if (!fs.existsSync(this.configuration.basePath)) {
-			fs.mkdirSync(this.configuration.basePath);
-		}
-	}
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	log(message: string, moreInfo: MoreInfo): void {
-		fs.writeFileSync(
-			path.join(this.configuration.basePath, this.getFilename()),
-			message + "\n",
-			{
-				flag: "a",
-			}
-		);
-	}
+  public log(message: string, moreInfo: MoreInfo): void {
+    if (!this.getLogLevels().includes(moreInfo.type)) {
+      return;
+    }
+    const today = moreInfo.timeLogged;
+    const fileName = this.getFileName(today);
+    const filePath = path.join(this.filePath, fileName);
+    if (!fs.existsSync(this.filePath)) {
+      fs.mkdirSync(this.filePath);
+    }
+    fs.appendFileSync(filePath, `${message}\n`);
+  }
 
-	getLastMessage(): string {
-		if (
-			!fs.existsSync(path.join(this.configuration.basePath, this.getFilename()))
-		) {
-			return this.initialLog();
-		}
-		if (this.configuration.fileByDate) {
-			//read directory and get the last file
-			const files = fs.readdirSync(this.configuration.basePath);
-			const orderFiles = files.sort();
-			const lastFile = orderFiles[orderFiles.length - 1];
-			const data = fs.readFileSync(
-				path.join(this.configuration.basePath, lastFile),
-				"utf8"
-			);
-			const lines = data.trim().split("\n");
-			return lines[lines.length - 1];
-		}
-		const data = fs.readFileSync(
-			path.join(this.configuration.basePath, this.configuration.fileName),
-			"utf8"
-		);
-		return data[data.length - 1];
-	}
-
-	getFilename(): string {
-		if (this.configuration.fileByDate) {
-			const today = new Date();
-			return `${today.getFullYear()}-${today.getMonth()}-${today.getDay()}-${
-				this.configuration.fileName
-			}`;
-		}
-		return this.configuration.fileName;
-	}
+  public getFileName(today: Date): string {
+    if (this.fileByDay) {
+      return `${today.getFullYear()}-${today.getMonth()}-${today.getDay()}-${
+        this.fileName
+      }`;
+    }
+    return this.fileName;
+  }
 }

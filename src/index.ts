@@ -1,122 +1,133 @@
-import { Provider, TrustedProvider } from "./providers/provider";
-import { createHash } from "crypto";
+import { createHmac } from "crypto";
+import { Provider } from "./providers/provider";
 import { LogType, MoreInfo } from "./types";
-export { LogType, MoreInfo, Provider, TrustedProvider };
+export { LogType, MoreInfo, Provider };
+
 export class Logger {
-	private format: string = "HASH[TYPE] HH:MI:SS:MS DD/MM/YYYY TZ MSG";
-	private allProviders: Provider[];
-	private trustedProvider: TrustedProvider | null = null;
-	private lastMessageHash: string = "";
-	private static _instance: Logger;
-	private trustedProviderLogLevelRequired: LogType[] = [
-		LogType.CRITICAL,
-		LogType.ERROR,
-		LogType.WARNING,
-		LogType.INFO,
-		LogType.DEBUG,
-	];
+  private allProviders: Provider[];
+  private static _instance: Logger;
+  private secret: string | undefined;
+  private format: string;
 
-	private constructor(
-		providers: Provider[],
-		trustedProvider: TrustedProvider | null = null
-	) {
-		this.allProviders = providers;
-		if (trustedProvider) {
-			const providerLogLevel = trustedProvider.getLogLevel();
-			for (const logLevel of this.trustedProviderLogLevelRequired) {
-				if (!providerLogLevel.includes(logLevel)) {
-					throw new Error(
-						`Trusted provider must have log level ${logLevel} but has ${providerLogLevel.join(
-							", "
-						)}`
-					);
-				}
-			}
-			this.trustedProvider = trustedProvider;
-			this.allProviders.unshift(trustedProvider);
-			this.lastMessageHash = this.hash(trustedProvider.getLastMessage());
-		}
-	}
-	public static getLogger(): Logger;
-	public static getLogger(providers: Provider[]): Logger;
-	public static getLogger(
-		providers: Provider[],
-		trustedProvider: TrustedProvider
-	): Logger;
-	public static getLogger(trustedProvider: TrustedProvider): Logger;
+  private constructor(
+    format: string | undefined,
+    providers: Provider[],
+    secret: string | undefined,
+  ) {
+    this.format = format || "[TYPE] HH:MI:SS:MS DD/MM/YYYY TZ MSG";
+    this.allProviders = providers;
+    this.secret = secret;
+  }
 
-	public static getLogger(
-		providers?: Provider[] | TrustedProvider,
-		trustedProvider?: TrustedProvider
-	): Logger {
-		if (!Logger._instance) {
-			if (providers instanceof Array) {
-				Logger._instance = new Logger(providers, trustedProvider || null);
-			} else if (providers instanceof TrustedProvider) {
-				Logger._instance = new Logger([], providers);
-			} else {
-				throw new Error("Logger not configured");
-			}
-		}
-		return Logger._instance;
-	}
+  public info(message: string): void {
+    this.log(message, LogType.INFO);
+  }
 
-	public info(message: string): void {
-		this.log(message, LogType.INFO);
-	}
+  public warn(message: string): void {
+    this.log(message, LogType.WARNING);
+  }
 
-	public warn(message: string): void {
-		this.log(message, LogType.WARNING);
-	}
+  public debug(message: string): void {
+    this.log(message, LogType.DEBUG);
+  }
 
-	public debug(message: string): void {
-		this.log(message, LogType.DEBUG);
-	}
+  public critical(message: string): void {
+    this.log(message, LogType.CRITICAL);
+  }
 
-	public critical(message: string): void {
-		this.log(message, LogType.CRITICAL);
-	}
+  public error(message: string): void {
+    this.log(message, LogType.ERROR);
+  }
 
-	public error(message: string): void {
-		this.log(message, LogType.ERROR);
-	}
+  private log(message: string, type: LogType): void {
+    const timeLogged = new Date();
+    let messageFormatted = this.formatMessage(message, type, timeLogged);
+    const moreInfo: MoreInfo = {
+      messageNotFormatted: message,
+      type,
+      timeLogged,
+      messageHmac: undefined,
+    };
+    if (this.secret) {
+      moreInfo.messageHmac = this.hmacHash(messageFormatted);
+      messageFormatted += ` ${moreInfo.messageHmac}`;
+    }
+    this.allProviders.forEach((provider) =>
+      provider.log(messageFormatted, moreInfo),
+    );
+  }
 
-	private log(message: string, type: LogType): void {
-		const timeLogged = new Date();
-		const formattedMessage = this.formatMessage(message, type, timeLogged);
-		const moreInfo: MoreInfo = {
-			type,
-			messageNotFormatted: message,
-			timeLogged,
-			lastMessageHash: this.lastMessageHash,
-		};
-		if (this.trustedProvider !== null) {
-			this.lastMessageHash = this.hash(formattedMessage);
-		}
-		this.allProviders.forEach((provider) =>
-			provider.log(formattedMessage, moreInfo)
-		);
-	}
+  public static getLogger(
+    format: string | undefined,
+    providers: Provider[],
+    secret: string,
+  ): Logger;
 
-	formatMessage(message: string, type: LogType, timeLogged: Date): string {
-		const formattedMessage = this.format
-			.replace("TYPE", type)
-			.replace("HH", timeLogged.getHours().toString())
-			.replace("MI", timeLogged.getMinutes().toString())
-			.replace("SS", timeLogged.getSeconds().toString())
-			.replace("TS", timeLogged.getTime().toString())
-			.replace("MS", timeLogged.getMilliseconds().toString())
-			.replace("TZ", timeLogged.getTimezoneOffset().toString())
-			.replace("DD", timeLogged.getDate().toString())
-			.replace("MM", timeLogged.getMonth().toString())
-			.replace("YYYY", timeLogged.getFullYear().toString())
-			.replace("MSG", message);
-		if (this.trustedProvider === null) {
-			return formattedMessage.replace("HASH", "");
-		}
-		return formattedMessage.replace("HASH", this.lastMessageHash + " ");
-	}
-	private hash(message: string): string {
-		return createHash("sha256").update(message).digest("hex");
-	}
+  public static getLogger(providers: Provider[], secret: string): Logger;
+
+  public static getLogger(provider: Provider, secret: string): Logger;
+
+  public static getLogger(
+    format: string | undefined,
+    providers: Provider[],
+  ): Logger;
+
+  public static getLogger(providers: Provider[]): Logger;
+
+  public static getLogger(format: string, provider: Provider): Logger;
+
+  public static getLogger(provider: Provider): Logger;
+
+  public static getLogger(): Logger;
+
+  public static getLogger(
+    args1?: string | Provider | Provider[],
+    args2?: Provider | Provider[] | string,
+    secret?: string,
+  ): Logger {
+    if (Logger._instance) {
+      return Logger._instance;
+    }
+    let format: string | undefined;
+    let providers: Provider[] = [];
+
+    if (typeof args1 === "string") {
+      format = args1;
+    } else if (args1 instanceof Provider) {
+      providers.push(args1);
+    }
+    if (Array.isArray(args1)) {
+      providers = args1;
+    }
+    if (args2 instanceof Provider) {
+      providers.push(args2);
+    } else if (Array.isArray(args2)) {
+      providers = args2;
+    } else if (typeof args2 === "string") {
+      secret = args2;
+    }
+    Logger._instance = new Logger(format, providers, secret);
+    return Logger._instance;
+  }
+
+  formatMessage(message: string, type: LogType, timeLogged: Date): string {
+    return this.format
+      .replace("TYPE", type)
+      .replace("HH", timeLogged.getHours().toString())
+      .replace("MI", timeLogged.getMinutes().toString())
+      .replace("SS", timeLogged.getSeconds().toString())
+      .replace("MS", timeLogged.getMilliseconds().toString())
+      .replace("TZ", timeLogged.getTimezoneOffset().toString())
+      .replace("DD", timeLogged.getDate().toString())
+      .replace("MM", (timeLogged.getMonth() + 1).toString())
+      .replace("YYYY", timeLogged.getFullYear().toString())
+      .replace("MSG", message);
+  }
+
+  private hmacHash(message: string): string {
+    if (!this.secret) {
+      throw new Error("Secret is not defined");
+    }
+    return createHmac("sha256", this.secret).update(message).digest("hex");
+  }
 }
