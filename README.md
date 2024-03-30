@@ -13,23 +13,23 @@ Message will contain a sha256 hash of the last message to confirm that the messa
 ```ts
 import { Logger } from "logcm";
 import {
-	ConsoleProvider,
-	FileProvider,
-	DiscordProvider,
+  ConsoleProvider,
+  FileProvider,
+  DiscordProvider,
 } from "logcm/providers";
 
 const logger = Logger.getLogger(
-	[
-		new ConsoleProvider({}),
-		new DiscordProvider({
-			webhook: "http://....",
-		}),
-	],
-	new FileProvider({
-		basePath: "./logs",
-		fileByDate: true,
-		fileName: "log.txt",
-	})
+  [
+    new ConsoleProvider({}),
+    new DiscordProvider({
+      webhook: "http://....",
+    }),
+  ],
+  new FileProvider({
+    basePath: "./logs",
+    fileByDate: true,
+    fileName: "log.txt",
+  }),
 );
 
 logger.info("Hello world");
@@ -43,21 +43,21 @@ Message will not contain a sha256 it will act as a normal logger.
 ```ts
 import { Logger } from "logcm";
 import {
-	ConsoleProvider,
-	FileProvider,
-	DiscordProvider,
+  ConsoleProvider,
+  FileProvider,
+  DiscordProvider,
 } from "logcm/providers";
 
 const logger = Logger.getLogger([
-	new ConsoleProvider({}),
-	new DiscordProvider({
-		webhook: "http://....",
-	}),
-	new FileProvider({
-		basePath: "./logs",
-		fileByDate: true,
-		fileName: "log.txt",
-	}),
+  new ConsoleProvider({}),
+  new DiscordProvider({
+    webhook: "http://....",
+  }),
+  new FileProvider({
+    basePath: "./logs",
+    fileByDate: true,
+    fileName: "log.txt",
+  }),
 ]);
 
 logger.info("Hello world");

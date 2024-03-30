@@ -1,56 +1,57 @@
 {
-	"name": "logcm",
-	"version": "1.0.43",
-	"description": "A modular logger with cryptography support to check the integrity of the logs",
-	"main": "dist/index.js",
-	"files": [
-		"dist"
-	],
-	"types": "dist/index.d.ts",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/StevenSermeus/logcm.git"
-	},
-	"scripts": {
-		"build": "tsup ",
-		"dev": "nodemon src/index.ts",
-		"lint": "eslint . --ignore-pattern dist",
-		"test": "vitest run",
-		"test:watch": "vitest --watch",
-		"type-check": "tsc --noEmit",
-		"test:ui": "vitest --ui",
-		"precommit:install": "lefthook install"
-	},
-	"keywords": [
-		"logging",
-		"crypto",
-		"security",
-		"typescript",
-		"nodejs",
-		"logger"
-	],
-	"author": "Sermeus Steven",
-	"devDependencies": {
-		"@changesets/cli": "^2.27.1",
-		"@eslint/js": "^8.57.0",
-		"@types/express": "^4.17.21",
-		"@types/node": "^20.11.30",
-		"@vitest/ui": "^1.4.0",
-		"eslint": "^8.57.0",
-		"lefthook": "^1.6.7",
-		"nodemon": "^3.1.0",
-		"prettier": "^3.2.5",
-		"tiny-glob": "^0.2.9",
-		"ts-node": "^10.9.2",
-		"tsup": "^8.0.2",
-		"typescript": "^5.4.3",
-		"typescript-eslint": "^7.4.0",
-		"vitest": "^1.4.0"
-	},
-	"dependencies": {
-		"chalk": "^4.0.0",
-		"express": "^4.19.2",
-		"zod": "^3.22.4"
-	},
-	"license": "GPL-3.0-only"
+  "name": "logcm",
+  "version": "1.0.43",
+  "description": "A modular logger with cryptography support to check the integrity of the logs",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/StevenSermeus/logcm.git"
+  },
+  "scripts": {
+    "build": "pnpm run test && pnpm run lint && pnpm run tsup ",
+    "dev": "nodemon src/index.ts",
+    "lint": "eslint . --ignore-pattern dist",
+    "test": "vitest run",
+    "test:watch": "vitest --watch",
+    "type-check": "tsc --noEmit",
+    "test:ui": "vitest --ui",
+    "precommit:install": "lefthook install",
+    "format": "prettier --write ."
+  },
+  "keywords": [
+    "logging",
+    "crypto",
+    "security",
+    "typescript",
+    "nodejs",
+    "logger"
+  ],
+  "author": "Sermeus Steven",
+  "devDependencies": {
+    "@changesets/cli": "^2.27.1",
+    "@eslint/js": "^8.57.0",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.11.30",
+    "@vitest/ui": "^1.4.0",
+    "eslint": "^8.57.0",
+    "lefthook": "^1.6.7",
+    "nodemon": "^3.1.0",
+    "prettier": "^3.2.5",
+    "tiny-glob": "^0.2.9",
+    "ts-node": "^10.9.2",
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.3",
+    "typescript-eslint": "^7.4.0",
+    "vitest": "^1.4.0"
+  },
+  "dependencies": {
+    "chalk": "^4.0.0",
+    "express": "^4.19.2",
+    "zod": "^3.22.4"
+  },
+  "license": "GPL-3.0-only"
 }
