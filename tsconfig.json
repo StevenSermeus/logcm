@@ -110,5 +110,6 @@
     "noEmit": true /* Skip type checking all .d.ts files. */,
     "resolveJsonModule": true
   },
-  "include": ["./package.json", "./*"]
+  "include": ["./package.json", "./*"],
+  "exclude": ["node_modules", "docs", "dist"]
 }

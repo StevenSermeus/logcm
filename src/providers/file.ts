@@ -4,20 +4,20 @@ import * as fs from "fs";
 import path from "path";
 
 interface FileProviderOptions {
-  filePath?: string;
+  folderPath?: string;
   fileByDay?: boolean;
   fileName?: string;
   logLevel?: LogType[];
 }
 
 export class FileProvider extends Provider {
-  private filePath: string;
+  private folderPath: string;
   private fileByDay: boolean;
   private fileName: string;
 
   constructor(
     {
-      filePath = "./logs",
+      folderPath = "./logs",
       fileByDay = false,
       fileName = "log.log",
       logLevel = [
@@ -27,7 +27,7 @@ export class FileProvider extends Provider {
         LogType.ERROR,
       ],
     }: FileProviderOptions = {
-      filePath: "./logs",
+      folderPath: "./logs",
       fileByDay: false,
       fileName: "log.log",
       logLevel: [
@@ -39,7 +39,7 @@ export class FileProvider extends Provider {
     },
   ) {
     super(logLevel);
-    this.filePath = filePath;
+    this.folderPath = folderPath;
     this.fileByDay = fileByDay;
     this.fileName = fileName;
   }
@@ -50,9 +50,9 @@ export class FileProvider extends Provider {
     }
     const today = moreInfo.timeLogged;
     const fileName = this.getFileName(today);
-    const filePath = path.join(this.filePath, fileName);
-    if (!fs.existsSync(this.filePath)) {
-      fs.mkdirSync(this.filePath);
+    const filePath = path.join(this.folderPath, fileName);
+    if (!fs.existsSync(this.folderPath)) {
+      fs.mkdirSync(this.folderPath);
     }
     fs.appendFileSync(filePath, `${message}\n`);
   }

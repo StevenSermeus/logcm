@@ -1,4 +1,4 @@
-# logcm
+# Logcm
 
 A modular logger for javascript/typescript projects. This logger can be used to log messages to the console, file, database, etc. You can easily add new providers by extending the `Provider` class. The logger can be configured to log messages in a specific format. The log integrity can be ensured by using a secret key to add a hmac signature to the log messages.
 
@@ -39,7 +39,7 @@ logger.error("This is an error message");
 
 ## Installation
 
-Install `logcm` with npm, pnpm or yarn
+Install my-project with npm, pnpm or yarn
 
 ```bash
   npm install logcm
@@ -62,5 +62,3 @@ Please adhere to this project's `code of conduct`.
 ## Roadmap
 
 - Add more providers.
-
-- Auto deploy the documentation to github pages.

@@ -16,6 +16,11 @@
       "require": "./dist/providers/index.js",
       "import": "./dist/providers/index.mjs",
       "types": "./dist/providers/index.d.ts"
+    },
+    "./types": {
+      "require": "./dist/types/index.js",
+      "import": "./dist/types/index.mjs",
+      "types": "./dist/types/index.d.ts"
     }
   },
   "types": "dist/index.d.ts",
@@ -26,7 +31,7 @@
   "scripts": {
     "build": "pnpm run test && pnpm run lint && pnpm run format && tsup ",
     "dev": "nodemon src/index.ts",
-    "lint": "eslint . --ignore-pattern dist",
+    "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest --watch",
     "type-check": "tsc --noEmit",
@@ -59,7 +64,6 @@
     "ts-node": "^10.9.2",
     "tsup": "^8.0.2",
     "typescript": "^5.4.3",
-    "typescript-eslint": "^7.4.0",
     "vitest": "^1.4.0"
   },
   "dependencies": {
