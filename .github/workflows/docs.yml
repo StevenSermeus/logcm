@@ -13,10 +13,6 @@ concurrency:
   group: "pages"
   cancel-in-progress: false
 
-defaults:
-  run:
-    working-directory: docs
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -30,9 +26,11 @@ jobs:
         with:
           node-version: "20.X"
           cache: "pnpm"
+      - run: cd docs
       - run: pnpm install
       - run: pnpm run build
       - run: pnpm export
+      - run: ls
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
